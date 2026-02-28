@@ -15,7 +15,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 
 **Explanation:**
 -'bandit0' is the username
-'bandit.labs.overthewire.org' is the host name
+-'bandit.labs.overthewire.org' is the host name
 '-p 2220' uses port 2220
 
 
@@ -97,7 +97,7 @@ cat ./-file07
 
 **Explanation:**
 -'file' states type of file - looking for ASCII text (human-readable)
-'*' is the wildcard command - command will apply to all files
+-'*' is the wildcard command - command will apply to all files
 
 **Password:** 4oQYVPkxZOOEOO5pTW81FB8j8lxXGUQw
 
@@ -117,9 +117,9 @@ cat inhere/maybehere07/.file2
 
 **Explanation:**
 -'find' command allows you to find contents with specific parameters
-'-type' filters type of file - in this case, 'f' meaning regular human-readable file
-'-size' filters size of file - '1033c' meaning 1033 bytes
-'!' -executable' excludes executable files
+-'-type' filters type of file - in this case, 'f' meaning regular human-readable file
+-'-size' filters size of file - '1033c' meaning 1033 bytes
+-'!' -executable' excludes executable files
 
 **Password:** HWasnPhtq9AVKe0dmk45nxy20cvUa6EG
 
@@ -139,8 +139,8 @@ cat /var/lib/dpkg/info/bandit7.password
 
 **Explanation:**
 -'find /' command searches entire server from root directory
-'-user' filters by user ownership
-'-group' filters by group ownership
+-'-user' filters by user ownership
+-'-group' filters by group ownership
 
 **Password:** morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj
 
@@ -172,7 +172,7 @@ sort data.txt | uniq -u
 **Explanation:**
 -'sort' command sorts lines of  atext file
 -'uniq' used in conjunction with 'sort', filters based on identical output
-'-u' flag tells computer to sort unique lines
+-'-u' flag tells computer to sort unique lines
 
 **Password:** 4CKMh1JI91bUIZZPXDqGanal4xvAg0JM
 
