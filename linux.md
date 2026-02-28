@@ -205,3 +205,21 @@ base64 -d data.txt
 -'base64 -d' reverses ('decodes" base64 encoding in data file
 
 **Password:** dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr
+
+
+#level 11 -> level 12
+
+**Challenge:** All lowercase and uppercase letters have been rotated by 13 characters in data file
+
+**Solution:**
+```bash
+cat data.txt | tr "A-Za-z" "N-ZA-Mn-za-m"
+```
+
+**Explanation:**
+-'tr' command translates data according to set parameters
+-'A-Za-z" states what characters to translate
+-'N-ZA-Mn-za-m' states what characters to translate to
+
+**Password:** 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
+
