@@ -1,6 +1,6 @@
-##Bandit Solutuions & Notes
+#Bandit Solutions & Notes
 
-#Level 0
+##Level 0
 
 **Challenge:** Log into game using ssh
 - Host: bandit.labs.overthewire.org
@@ -19,7 +19,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 '-p 2220' uses port 2220
 
 
-#level 0 -> level 1
+##level 0 -> level 1
 
 **Challenge:** Log in and read from 'readme' file
 
@@ -34,7 +34,7 @@ cat readme
 **Password:** ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If
 
 
-#level 1 -> level 2
+##level 1 -> level 2
 
 **Challenge:** Read from 'dashed' filename
 
@@ -50,7 +50,7 @@ cat ./-
 **Password:** 263JGJPfgU6LtdEvgfWU1XP5yac29mFx
 
 
-#level 2 -> level 3
+##level 2 -> level 3
 
 **Challenge:** Read from filename with spaces
 
@@ -66,7 +66,7 @@ cat "./--spaces in this filename--"
 **Password:** MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx
 
 
-#level 3 -> level 4
+##level 3 -> level 4
 
 **Challenge:** Locate and read from hidden file
 
@@ -83,7 +83,7 @@ cat ...Hiding-From-You
 **Password:** 2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ
 
 
-#level 4 -> level 5
+##level 4 -> level 5
 
 **Challenge:** Locate and read from only human-readable file
 
@@ -102,7 +102,7 @@ cat ./-file07
 **Password:** 4oQYVPkxZOOEOO5pTW81FB8j8lxXGUQw
 
 
-#level 5 -> level 6
+##level 5 -> level 6
 
 **Challenge:** Find a file with these properties:
 -human-readable
@@ -124,7 +124,7 @@ cat inhere/maybehere07/.file2
 **Password:** HWasnPhtq9AVKe0dmk45nxy20cvUa6EG
 
 
-#level 6 -> level 7
+##level 6 -> level 7
 
 **Challenge:** Find a file with these properties:
 -owned by user bandit7
@@ -145,7 +145,7 @@ cat /var/lib/dpkg/info/bandit7.password
 **Password:** morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj
 
 
-#level 7 -> level 8
+##level 7 -> level 8
 
 **Challenge:** Find a password within large file next to word 'millionth'
 
@@ -160,7 +160,7 @@ cat data.txt | grep "millionth"
 **Password:** dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc
 
 
-#level 8 -> level 9
+##level 8 -> level 9
 
 **Challenge:** Find password - a line within data file that only occurs once
 
@@ -177,7 +177,7 @@ sort data.txt | uniq -u
 **Password:** 4CKMh1JI91bUIZZPXDqGanal4xvAg0JM
 
 
-#level 9 -> level 10
+##level 9 -> level 10
 
 **Challenge:** Password located in one of few human-readable strings within file, preceded by several "=" characters
 
@@ -192,7 +192,7 @@ strings data.txt | grep "=="
 **Password:** FGUW5ilLVJrxX9kMYMmlN4MgbpfMiqey
 
 
-#level 10 -> level 11
+##level 10 -> level 11
 
 **Challenge:** Decode base64-encoded data file which contains password
 
@@ -207,7 +207,7 @@ base64 -d data.txt
 **Password:** dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr
 
 
-#level 11 -> level 12
+##level 11 -> level 12
 
 **Challenge:** All lowercase and uppercase letters have been rotated by 13 characters in data file
 
