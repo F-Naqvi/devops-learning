@@ -223,3 +223,66 @@ cat data.txt | tr "A-Za-z" "N-ZA-Mn-za-m"
 
 **Password:** 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
 
+
+##level 12 -> level 13
+
+**Challenge:** Password is located in a repeatedly-compressed hexdump of a file
+
+**Solution:**
+```bash
+mktemp -d /tmp/Faseeh.XXXXX
+xxd -r data.txt > data
+file data
+mv data data.gz
+gzip -d data.gz
+```
+(Continue process for gzip, bzip2, tar until file is fully de-compressed)
+
+**Explanation:**
+-'mktemp -d' creates a temporary directory to work in
+-'xxd -r" reverses a hexdump
+-'file' states what data the file contains
+-'mv' moves contents of one file to another
+-'gzip -d' decompresses a gzip file
+
+**Password:** FO5dwFsc0cbaIiH0h8J2eUKs2vdTDwAn
+
+
+##level 13 -> level 14
+
+**Challenge:** Log in to next level using ssh key
+
+**Solution:**
+```bash
+scp -P 2220 bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private .
+chmod 600 sshkey.private
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+cd /etc/bandit_pass
+cat bandit14
+```
+
+**Explanation:**
+-'scp -P' creates a secure copy - structure: host:file to be copied
+-'chmod" changes permissions
+-'ssh -i' instructs computer to use private key rather than password
+
+**Password:** MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
+
+
+##level 14 -> level 15
+
+**Challenge:** Submit password to port 30000 on localhost
+
+**Solution:**
+```bash
+nc localhost 30000
+MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
+```
+
+**Explanation:**
+-'nc' opens a network connection to port 30000
+-Must print password to previous level on next line
+
+
+**Password:** 8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
+```
