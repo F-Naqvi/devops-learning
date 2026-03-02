@@ -285,4 +285,41 @@ MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
 
 
 **Password:** 8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
+
+
+##level 15 -> level 16
+
+**Challenge:** Submit password to port 30001 on localhost using SSL/TLS encryption
+
+**Solution:**
+```bash
+openssl s_client -connect localhost:30001
+8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
 ```
+
+**Explanation:**
+-'openssl s_client' creates a simple client that connects to a server using SSL/TLS
+-Must print password to previous level on next line
+
+
+**Password:** kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx
+
+
+##level 16 -> level 17
+
+**Challenge:** Submit current password to port between 31000-32000, find which ports have server listening & which speak SSL/TLS
+
+**Solution:**
+```bash
+nmap -sV localhost -p 31000-32000
+echo "kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx" | openssl s_client -connect localhost:31790 -quiet
+```
+
+**Explanation:**
+-'nmap' is a network scanner, with -p directing it to a port/range of ports
+-'sV' performs a service/version detection scan
+-'quiet'only shows stdin and stdout data in this case
+-Password command is piped into ssl command
+
+
+**Password:** (given private SSH key)
