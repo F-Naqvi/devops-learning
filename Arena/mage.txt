@@ -1,0 +1,6 @@
+This is a mage text file
+This file has been created during the completeion of the BASH Battle Arena Challenges
+This is a text file
+
+This is a line
+This is another line
