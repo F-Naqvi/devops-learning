@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>about</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Zen+Kaku+Gothic+New:wght@300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #0d1117;
+      --text:      #c8dce6;
+      --text-dim:  #7aaabb;
+      --text-ghost:#4a7a8a;
+      --accent:    rgba(140, 190, 210, 0.15);
+      --line:      rgba(140, 190, 210, 0.08);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      cursor: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cursor {
+      position: fixed;
+      width: 6px; height: 6px;
+      background: rgba(140, 190, 210, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(140,190,210,0.4);
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(6,10,14,0.75) 100%);
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 520px;
+      padding: 0 2rem;
+      animation: arrive 2.5s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes arrive {
+      0%   { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .label {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 300;
+      font-size: 0.6rem;
+      letter-spacing: 0.55em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--line);
+      margin: 0 auto 2.5rem;
+    }
+
+    .description {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text);
+      line-height: 1.9;
+      letter-spacing: 0.03em;
+      margin-bottom: 3rem;
+    }
+
+    .divider-2 {
+      width: 20px;
+      height: 1px;
+      background: var(--line);
+      margin: 0 auto 2.5rem;
+    }
+
+    .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 1.4rem;
+      color: var(--text);
+      letter-spacing: 0.15em;
+      margin-bottom: 1.8rem;
+    }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .links a {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.4s ease, letter-spacing 0.4s ease;
+    }
+
+    .links a:hover {
+      color: var(--text);
+      letter-spacing: 0.5em;
+    }
+
+    .back {
+      position: fixed;
+      top: 2rem;
+      width: 100vw;
+      left: 0;
+      text-align: center;
+      display: block;
+      z-index: 10;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 300;
+      font-size: 0.55rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      text-decoration: none;
+      transition: color 0.4s ease;
+      animation: arrive 5s ease forwards;
+      opacity: 0;
+    }
+
+    .back:hover { color: var(--text-dim); }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <canvas id="c"></canvas>
+  <div class="vignette"></div>
+
+  <a href="/" class="back">← return to stillness</a>
+
+  <div class="card">
+    <div class="label">about</div>
+    <div class="divider"></div>
+    <p class="description">
+      I built this to practice and explore Docker — containerisation,
+      container networking, multi-service orchestration, load balancing,
+      and the fundamentals of modern DevOps. A project born from curiosity,
+      built through iteration.
+    </p>
+    <div class="divider-2"></div>
+    <div class="name">Faseeh Naqvi</div>
+    <div class="links">
+      <a href="https://github.com/F-Naqvi" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/faseeh-n" target="_blank">linkedin</a>
+    </div>
+  </div>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+
+    const canvas = document.getElementById('c');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const cx = () => canvas.width  / 2;
+    const cy = () => canvas.height / 2;
+
+    const rings = [];
+    let lastRipple = 0;
+
+    function addRipple(t) {
+      rings.push({ r: 0, born: t, life: 3200, maxR: Math.min(canvas.width, canvas.height) * 0.48, x: null, y: null, alpha: 0.18 });
+    }
+
+    function addClickRipple(t, x, y) {
+      rings.push({ r: 0, born: t, life: 2400, maxR: Math.min(canvas.width, canvas.height) * 0.32, x, y, alpha: 0.09 });
+    }
+
+    const dust = Array.from({ length: 55 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 0.4 + Math.random() * 0.9,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: -0.04 - Math.random() * 0.08,
+      o: 0.04 + Math.random() * 0.12,
+    }));
+
+    function draw(t) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const bg = ctx.createRadialGradient(cx(), cy(), 0, cx(), cy(), Math.max(canvas.width, canvas.height) * 0.7);
+      bg.addColorStop(0,   '#111820');
+      bg.addColorStop(0.5, '#0d1117');
+      bg.addColorStop(1,   '#080c10');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (t - lastRipple > 2000) { addRipple(t); lastRipple = t; }
+
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const ring = rings[i];
+        const age  = t - ring.born;
+        if (age > ring.life) { rings.splice(i, 1); continue; }
+        const prog = age / ring.life;
+        ring.r = ring.maxR * Math.pow(prog, 0.55);
+        const rx = ring.x !== null ? ring.x : cx();
+        const ry = ring.y !== null ? ring.y : cy();
+        ctx.beginPath();
+        ctx.arc(rx, ry, ring.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(140, 190, 210, ${(1 - prog) * ring.alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      dust.forEach(d => {
+        d.x += d.vx; d.y += d.vy;
+        if (d.y < -4) { d.y = canvas.height + 4; d.x = Math.random() * canvas.width; }
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(140, 190, 210, ${d.o})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+    document.addEventListener('click', e => addClickRipple(performance.now(), e.clientX, e.clientY));
+
+    // Drag trail
+    let isDragging = false;
+    let lastTrail = 0;
+    document.addEventListener('mousedown', () => isDragging = true);
+    document.addEventListener('mouseup',   () => isDragging = false);
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const now = performance.now();
+      if (now - lastTrail < 80) return;
+      lastTrail = now;
+      rings.push({ r: 0, born: now, life: 1800, maxR: 80, x: e.clientX, y: e.clientY, alpha: 0.06 });
+    });
+  </script>
+</body>
+</html>

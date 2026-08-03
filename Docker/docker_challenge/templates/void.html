@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>stillness</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Zen+Kaku+Gothic+New:wght@300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #0d1117;
+      --text:      #c8dce6;
+      --text-dim:  #7aaabb;
+      --text-ghost:#4a7a8a;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      cursor: none;
+    }
+
+    .cursor {
+      position: fixed;
+      width: 6px; height: 6px;
+      background: rgba(140, 190, 210, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(140,190,210,0.4);
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .stone {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, #1e3040, #0a1520 60%, #060e18);
+      box-shadow: 0 0 0 1px rgba(140,190,210,0.08), 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 2px rgba(140,190,210,0.06);
+      animation: stone-breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes stone-breathe {
+      0%,100% { box-shadow: 0 0 0 1px rgba(140,190,210,0.08), 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 2px rgba(140,190,210,0.06); }
+      50%      { box-shadow: 0 0 0 1px rgba(140,190,210,0.15), 0 4px 30px rgba(0,0,0,0.7), inset 0 1px 2px rgba(140,190,210,0.1); }
+    }
+
+    .content {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+      pointer-events: none;
+      animation: arrive 3s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes arrive {
+      0%   { opacity: 0; transform: translate(-50%, -48%); }
+      100% { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    @keyframes fadein {
+      0%   { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .label {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 300;
+      font-size: 0.6rem;
+      letter-spacing: 0.55em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .count {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(5rem, 14vw, 10rem);
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 60px rgba(140,190,210,0.12);
+      animation: count-breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes count-breathe {
+      0%,100% { text-shadow: 0 0 60px rgba(140,190,210,0.12); opacity: 0.92; }
+      50%      { text-shadow: 0 0 80px rgba(140,190,210,0.2);  opacity: 1; }
+    }
+
+    .message {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      margin-top: 1.8rem;
+      animation: message-settle 5s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes message-settle {
+      0%,40% { opacity: 0; }
+      100%   { opacity: 1; }
+    }
+
+    .about-link {
+      position: fixed;
+      top: 2rem;
+      left: 0; right: 0;
+      display: block;
+      text-align: center;
+      z-index: 10;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 300;
+      font-size: 0.55rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      text-decoration: none;
+      transition: color 0.4s ease;
+      animation: fadein 5s ease forwards;
+      opacity: 0;
+    }
+
+    .about-link:hover { color: var(--text-dim); }
+
+    .node {
+      position: fixed;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      color: var(--text-ghost);
+      white-space: nowrap;
+      animation: fadein 8s ease forwards;
+      opacity: 0;
+    }
+
+    .hostname {
+      font-style: normal;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .mute-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 10;
+      background: none;
+      border: none;
+      color: var(--text-ghost);
+      font-size: 1rem;
+      cursor: pointer;
+      opacity: 1;
+      transition: color 0.4s ease, opacity 0.4s ease;
+      animation: fadein 8s ease forwards;
+    }
+
+    .mute-btn:hover { color: var(--text-dim); }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(6,10,14,0.75) 100%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <canvas id="c"></canvas>
+  <div class="stone"></div>
+  <div class="vignette"></div>
+
+  <a href="/about" class="about-link">about →</a>
+  <a href="/map" style="position:fixed;top:2rem;right:2rem;z-index:10;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:300;font-size:0.55rem;letter-spacing:0.45em;text-transform:uppercase;color:#4a7a8a;text-decoration:none;animation:fadein 5s ease forwards;opacity:0;transition:color 0.4s ease;">presence →</a>
+
+  <div class="content">
+    <div class="label">moments passed</div>
+    <div class="count">{{ count }}</div>
+    <div class="message">{{ message }}</div>
+  </div>
+
+  <div class="node">carried by <span class="hostname">{{ hostname }}</span></div>
+  <button class="mute-btn" id="muteBtn" title="Toggle sound">♪</button>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+
+    // Ripple canvas
+    const canvas = document.getElementById('c');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const cx = () => canvas.width  / 2;
+    const cy = () => canvas.height / 2;
+
+    const rings = [];
+    let lastRipple = 0;
+
+    function addRipple(t) {
+      rings.push({ r: 0, born: t, life: 3200, maxR: Math.min(canvas.width, canvas.height) * 0.48, x: null, y: null, alpha: 0.18 });
+    }
+
+    function addClickRipple(t, x, y) {
+      rings.push({ r: 0, born: t, life: 2400, maxR: Math.min(canvas.width, canvas.height) * 0.32, x, y, alpha: 0.09 });
+    }
+
+    const dust = Array.from({ length: 55 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 0.4 + Math.random() * 0.9,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: -0.04 - Math.random() * 0.08,
+      o: 0.04 + Math.random() * 0.12,
+    }));
+
+    function draw(t) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const bg = ctx.createRadialGradient(cx(), cy(), 0, cx(), cy(), Math.max(canvas.width, canvas.height) * 0.7);
+      bg.addColorStop(0,   '#111820');
+      bg.addColorStop(0.5, '#0d1117');
+      bg.addColorStop(1,   '#080c10');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (t - lastRipple > 2000) { addRipple(t); lastRipple = t; }
+
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const ring = rings[i];
+        const age  = t - ring.born;
+        if (age > ring.life) { rings.splice(i, 1); continue; }
+        const prog = age / ring.life;
+        ring.r = ring.maxR * Math.pow(prog, 0.55);
+        const rx = ring.x !== null ? ring.x : cx();
+        const ry = ring.y !== null ? ring.y : cy();
+        ctx.beginPath();
+        ctx.arc(rx, ry, ring.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(140, 190, 210, ${(1 - prog) * ring.alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      dust.forEach(d => {
+        d.x += d.vx; d.y += d.vy;
+        if (d.y < -4) { d.y = canvas.height + 4; d.x = Math.random() * canvas.width; }
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(140, 190, 210, ${d.o})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+
+    // Click ripple at cursor
+    document.addEventListener('click', e => {
+      if (e.target.id !== 'muteBtn') addClickRipple(performance.now(), e.clientX, e.clientY);
+    });
+
+    // Drag trail
+    let isDragging = false;
+    let lastTrail = 0;
+    document.addEventListener('mousedown', () => { isDragging = true; dragNoteIndex = 0; });
+    document.addEventListener('mouseup',   () => { isDragging = false; });
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const now = performance.now();
+      if (now - lastTrail < 80) return;
+      lastTrail = now;
+      rings.push({ r: 0, born: now, life: 1800, maxR: 80, x: e.clientX, y: e.clientY, alpha: 0.06 });
+      playDragSound();
+    });
+
+    // ── Audio ────────────────────────────────────────────────
+    let audioCtx = null;
+    let muted = false;
+    const ambientNodes = [];
+
+    function initAudio() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Pentatonic zen tones — warm, airy, peaceful
+      // C4, E4, G4, A4, C5 (528Hz region)
+      const layers = [
+        { freq: 261.6,  vol: 0.035 }, // C4
+        { freq: 329.6,  vol: 0.025 }, // E4
+        { freq: 392.0,  vol: 0.025 }, // G4
+        { freq: 440.0,  vol: 0.020 }, // A4
+        { freq: 523.2,  vol: 0.015 }, // C5
+        { freq: 261.4,  vol: 0.018 }, // C4 slightly detuned for shimmer
+        { freq: 523.5,  vol: 0.012 }, // C5 slightly detuned
+      ];
+
+      layers.forEach(({ freq, vol }, i) => {
+        const osc    = audioCtx.createOscillator();
+        const gain   = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        filter.Q.setValueAtTime(0.5, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 6);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        ambientNodes.push({ osc, gain, baseVol: vol });
+      });
+
+      // Very slow breathing LFO — like a deep breath every 8 seconds
+      const lfo     = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.frequency.setValueAtTime(0.06, audioCtx.currentTime);
+      lfoGain.gain.setValueAtTime(0.008, audioCtx.currentTime);
+      lfo.connect(lfoGain);
+      ambientNodes.forEach(n => lfoGain.connect(n.gain));
+      lfo.start();
+      ambientNodes.push({ osc: lfo, gain: lfoGain, baseVol: 0.008 });
+    }
+
+    let dragNoteIndex = 0;
+
+    function playDropSound(volume = 0.022) {
+      if (!audioCtx || muted) return;
+      const now = audioCtx.currentTime;
+
+      // Fundamental — warm bowl tone
+      const fundamental = audioCtx.createOscillator();
+      const fundGain    = audioCtx.createGain();
+      fundamental.type  = 'sine';
+      fundamental.frequency.setValueAtTime(432, now);
+      fundGain.gain.setValueAtTime(0, now);
+      fundGain.gain.linearRampToValueAtTime(volume, now + 0.015);
+      fundGain.gain.exponentialRampToValueAtTime(0.001, now + 3.5);
+      fundamental.connect(fundGain);
+      fundGain.connect(audioCtx.destination);
+      fundamental.start(now);
+      fundamental.stop(now + 3.5);
+
+      // Soft harmonic — octave above, quieter
+      const harmonic  = audioCtx.createOscillator();
+      const harmGain  = audioCtx.createGain();
+      harmonic.type   = 'sine';
+      harmonic.frequency.setValueAtTime(864, now);
+      harmGain.gain.setValueAtTime(0, now);
+      harmGain.gain.linearRampToValueAtTime(volume * 0.3, now + 0.015);
+      harmGain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+      harmonic.connect(harmGain);
+      harmGain.connect(audioCtx.destination);
+      harmonic.start(now);
+      harmonic.stop(now + 2.5);
+    }
+
+    function playClickSound() {
+      playDropSound(0.18);
+    }
+
+    function playDragSound() {
+      playDropSound(0.07);
+    }
+
+    function toggleMute() {
+      if (!audioCtx) { initAudio(); return; }
+      muted = !muted;
+      const btn = document.getElementById('muteBtn');
+      if (muted) {
+        ambientNodes.forEach(n => n.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5));
+        btn.innerHTML = '<span style="position:relative;display:inline-block;">♪<span style="position:absolute;left:-1px;top:50%;width:110%;height:1px;background:currentColor;transform:rotate(-35deg);"></span></span>';
+        btn.style.opacity = '0.4';
+      } else {
+        ambientNodes.forEach(n => {
+          n.gain.gain.linearRampToValueAtTime(n.baseVol || 0.02, audioCtx.currentTime + 1);
+        });
+        btn.innerHTML = '♪';
+        btn.style.opacity = '1';
+      }
+    }
+
+    document.getElementById('muteBtn').addEventListener('click', e => {
+      e.stopPropagation();
+      toggleMute();
+    });
+
+    // Start audio on page load
+    window.addEventListener('load', () => {
+      // AudioContext requires a user gesture on some browsers — try immediately, fallback to first click
+      try { initAudio(); } catch(e) {}
+      document.addEventListener('click', () => initAudio(), { once: true });
+    });
+
+    document.addEventListener('click', e => {
+      if (e.target.id !== 'muteBtn') playClickSound();
+    });
+    // ── End Audio ────────────────────────────────────────────
+  </script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>presence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Zen+Kaku+Gothic+New:wght@300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #0d1117;
+      --text-dim:  #7aaabb;
+      --text-ghost:#4a7a8a;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      cursor: none;
+    }
+
+    .cursor {
+      position: fixed;
+      width: 6px; height: 6px;
+      background: rgba(140, 190, 210, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(140,190,210,0.4);
+    }
+
+    #map {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 2.5s ease;
+      background: var(--bg);
+    }
+
+    #map.visible { opacity: 1; }
+
+    /* Tint tiles to blue-grey to match app palette */
+    .leaflet-tile-pane {
+      filter: brightness(0.4) saturate(0.15) sepia(0.4) hue-rotate(170deg) contrast(1.1);
+    }
+
+    .leaflet-control-container,
+    .leaflet-attribution-flag { display: none !important; }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(8,12,16,0.55) 60%, rgba(6,10,14,0.97) 100%);
+      pointer-events: none;
+    }
+
+    .fade-top {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 140px;
+      z-index: 6;
+      background: linear-gradient(to bottom, rgba(13,17,23,1) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .fade-bottom {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 140px;
+      z-index: 6;
+      background: linear-gradient(to top, rgba(13,17,23,1) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .back {
+      position: fixed;
+      top: 2rem;
+      left: 0; right: 0;
+      display: block;
+      text-align: center;
+      z-index: 10;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 300;
+      font-size: 0.55rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      text-decoration: none;
+      transition: color 0.4s ease;
+      animation: fadein 5s ease forwards;
+      opacity: 0;
+    }
+
+    .back:hover { color: var(--text-dim); }
+
+    .label {
+      position: fixed;
+      bottom: 2.5rem;
+      left: 0; right: 0;
+      text-align: center;
+      z-index: 10;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      color: var(--text-ghost);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+
+    .locating {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 0.9rem;
+      letter-spacing: 0.3em;
+      color: var(--text-ghost);
+      animation: fadein 2s ease forwards;
+      opacity: 0;
+      transition: opacity 1s ease;
+      pointer-events: none;
+    }
+
+    @keyframes fadein {
+      0%   { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Dot — matches the stone breathing animation on void page */
+    .presence-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, #4a9ab5, #1e3040 60%, #0a1520);
+      box-shadow:
+        0 0 0 1px rgba(140,190,210,0.15),
+        0 0 12px rgba(140,190,210,0.6),
+        0 0 30px rgba(140,190,210,0.3);
+      animation: dot-breathe 4s ease-in-out infinite;
+      position: relative;
+    }
+
+    /* Expanding ring — like the stone's outer glow */
+    .presence-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(140,190,210,0.25);
+      animation: dot-ring 4s ease-out infinite;
+    }
+
+    @keyframes dot-breathe {
+      0%,100% {
+        box-shadow: 0 0 0 1px rgba(140,190,210,0.15), 0 0 12px rgba(140,190,210,0.5), 0 0 25px rgba(140,190,210,0.2);
+      }
+      50% {
+        box-shadow: 0 0 0 1px rgba(140,190,210,0.3), 0 0 20px rgba(140,190,210,0.8), 0 0 45px rgba(140,190,210,0.4);
+      }
+    }
+
+    @keyframes dot-ring {
+      0%   { width: 14px; height: 14px; opacity: 0.5; }
+      100% { width: 60px; height: 60px; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div id="map"></div>
+  <div class="vignette"></div>
+  <div class="fade-top"></div>
+  <div class="fade-bottom"></div>
+
+  <a href="/" class="back">← return to stillness</a>
+  <div class="label" id="label"></div>
+  <div class="locating" id="locating">locating presence...</div>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+
+    const map = L.map('map', {
+      zoomControl:        false,
+      attributionControl: false,
+      dragging:           false,
+      scrollWheelZoom:    false,
+      doubleClickZoom:    false,
+      touchZoom:          false,
+      keyboard:           false,
+      maxZoom:            6,
+      minZoom:            2,
+    }).setView([20, 0], 2);
+
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png', {
+      maxZoom: 6,
+    }).addTo(map);
+
+    const dotIcon = L.divIcon({
+      className: '',
+      html: '<div class="presence-dot"></div>',
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+    });
+
+    const locatingEl = document.getElementById('locating');
+    const labelEl    = document.getElementById('label');
+    const mapEl      = document.getElementById('map');
+
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(data => {
+        const lat = data.latitude  || 20;
+        const lng = data.longitude || 0;
+
+        // 1. Fade out "locating presence..."
+        locatingEl.style.opacity = '0';
+
+        // 2. After locating fades, fly map in
+        setTimeout(() => {
+          mapEl.classList.add('visible');
+          map.flyTo([lat, lng], 5, {
+            duration:      4,
+            easeLinearity: 0.05,
+          });
+        }, 1000);
+
+        // 3. After fly completes, drop the dot and show label
+        setTimeout(() => {
+          L.marker([lat, lng], { icon: dotIcon }).addTo(map);
+          labelEl.textContent   = 'you are here. for now.';
+          labelEl.style.opacity = '1';
+        }, 5500);
+      })
+      .catch(() => {
+        locatingEl.style.opacity = '0';
+        setTimeout(() => {
+          mapEl.classList.add('visible');
+          labelEl.textContent   = 'presence undetected.';
+          labelEl.style.opacity = '1';
+        }, 1000);
+      });
+  </script>
+</body>
+</html>
